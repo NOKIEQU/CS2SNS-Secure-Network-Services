@@ -1,10 +1,31 @@
 import java.io.*;
 import java.net.*;
+import auth.ClientAuth;
 
 public class ChatClient {
+    private ClientAuth auth;
+
     public static void main(String[] args) {
+        BufferedReader consoleReader =
+                new BufferedReader(new InputStreamReader(System.in));
+
+        try {
+            System.out.print("Enter Your First Name: ");
+            String firstName = consoleReader.readLine();
+            System.out.print("Enter Your Last Name: ");
+            String lastName = consoleReader.readLine();
+            System.out.print("Enter Your Email: ");
+	    String email = consoleReader.readLine();
+	    ClientAuth auth = new ClientAuth(firstName,lastName,email);
+	    this.auth = auth;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+	System.out.println(this.auth.getFirstName());
+
+
         // 1. The server's address. "localhost" means "this same computer".
-        String hostname = "localhost"; 
+        String hostname = "192.168.1.224"; 
         int port = 12345;
 
         try {
