@@ -21,39 +21,39 @@ public class ChatClient {
             // Input from Server
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             // Input from User Keyboard
-            Scanner scanner = new Scanner(System.in);
-
-            // --- LISTENER THREAD ---
-            // Handles incoming messages and server commands
-            new Thread(() -> {
-                try {
-                    String serverMsg;
-                    while ((serverMsg = in.readLine()) != null) {
-                        // Check for specific protocol commands
-                        if (serverMsg.equals("SUBMIT_USERNAME")) {
-                            System.out.print("Enter Username: ");
-                        } 
-                        else if (serverMsg.equals("SUBMIT_PASSWORD")) {
-                            System.out.print("Enter Password: ");
-                        } 
-                        else if (serverMsg.equals("LOGIN_SUCCESS")) {
-                            System.out.println("=== LOGIN SUCCESSFUL! YOU CAN CHAT NOW ===");
-                        } 
-                        else {
-                            // Normal chat message
-                            System.out.println(serverMsg);
+            try (Scanner scanner = new Scanner(System.in)) {
+                // --- LISTENER THREAD ---
+                // Handles incoming messages and server commands
+                new Thread(() -> {
+                    try {
+                        String serverMsg;
+                        while ((serverMsg = in.readLine()) != null) {
+                            // Check for specific protocol commands
+                            if (serverMsg.equals("SUBMIT_USERNAME")) {
+                                System.out.print("Enter Username: ");
+                            } 
+                            else if (serverMsg.equals("SUBMIT_PASSWORD")) {
+                                System.out.print("Enter Password: ");
+                            } 
+                            else if (serverMsg.equals("LOGIN_SUCCESS")) {
+                                System.out.println("=== LOGIN SUCCESSFUL! YOU CAN CHAT NOW ===");
+                            } 
+                            else {
+                                // Normal chat message
+                                System.out.println(serverMsg);
+                            }
                         }
+                    } catch (IOException e) {
+                        System.out.println("Disconnected from server.");
+                        System.exit(0);
                     }
-                } catch (IOException e) {
-                    System.out.println("Disconnected from server.");
-                    System.exit(0);
-                }
-            }).start();
+                }).start();
 
-            // --- MAIN SENDER LOOP ---
-            while (scanner.hasNextLine()) {
-                String input = scanner.nextLine();
-                out.println(input);
+                // --- MAIN SENDER LOOP ---
+                while (scanner.hasNextLine()) {
+                    String input = scanner.nextLine();
+                    out.println("[you]" + input);
+                }
             }
 
         } catch (IOException e) {
