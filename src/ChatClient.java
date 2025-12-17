@@ -3,6 +3,8 @@ import java.io.*;
 import java.util.Scanner;
 
 public class ChatClient {
+    private ClientAuth auth;
+
     public static void main(String[] args) {
         String hostname = "localhost";
         int port = 12345;
