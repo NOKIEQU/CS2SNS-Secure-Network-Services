@@ -1,35 +1,75 @@
+import javax.net.ssl.*;
 import java.io.*;
-import java.net.*;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ChatServer {
+    // 1. DATABASE of valid users (Username -> Password)
+    // In a real app, this would be in a database file.
+    private static Map<String, String> userDatabase = new ConcurrentHashMap<>();
+    
+    // 2. Track connected users so nobody can log in twice at the same time
+    public static Set<String> connectedUsers = ConcurrentHashMap.newKeySet();
+    
+    // 3. Output streams for broadcasting
+    private static Set<PrintWriter> allClientWriters = ConcurrentHashMap.newKeySet();
+
     public static void main(String[] args) {
-        // 1. Define the port number. Both client and server must agree on this.
-        int port = 12345; 
+        int port = 12345;
+
+        // --- PRE-REGISTER SOME USERS FOR TESTING ---
+        userDatabase.put("alice", "password123");
+        userDatabase.put("bob", "securepass");
+        userDatabase.put("admin", "admin");
+
+        // SSL Setup (Same as Level 2)
+        System.setProperty("javax.net.ssl.keyStore", "keystore.jks");
+        System.setProperty("javax.net.ssl.keyStorePassword", "verystrongpassword123");
 
         try {
-            // 2. Create the ServerSocket. This listens for incoming connections.
-            ServerSocket serverSocket = new ServerSocket(port);
-            System.out.println("Server started! Waiting for a client to connect...");
+            SSLServerSocketFactory sslFactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+            SSLServerSocket serverSocket = (SSLServerSocket) sslFactory.createServerSocket(port);
+            
+            System.out.println("SECURE Chat Server (Level 3) started on port " + port);
+            System.out.println("Allowed users: alice, bob, admin");
 
             while (true) {
-            // 3. The accept() method BLOCKS (pauses) the program until a client connects.
-  
-              try {
-              Socket clientSocket = serverSocket.accept(); 
-              System.out.println("A client has connected!");
-
-              } catch (IOException e) {
-                  System.out.println("Error accepting client connection: " + e.getMessage());
-              }
-
+                SSLSocket clientSocket = (SSLSocket) serverSocket.accept();
+                new Thread(new ClientHandler(clientSocket)).start();
             }
-
-            // 4. If we reach this line, a connection was successful!
-            
-            // (Later, we will pass this 'clientSocket' to a new thread here)
 
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    // --- AUTHENTICATION HELPERS ---
+    
+    public static boolean checkLogin(String username, String password) {
+        // Returns true only if user exists AND password matches
+        return userDatabase.containsKey(username) && userDatabase.get(username).equals(password);
+    }
+
+    // --- BROADCAST HELPERS ---
+
+    public static void addClient(PrintWriter writer) {
+        allClientWriters.add(writer);
+    }
+
+    public static void removeClient(PrintWriter writer, String username) {
+        allClientWriters.remove(writer);
+        if (username != null) {
+            connectedUsers.remove(username);
+            System.out.println(username + " has left.");
+            broadcast("SERVER: " + username + " has left the chat.", null);
+        }
+    }
+
+    public static void broadcast(String message, PrintWriter excludeWriter) {
+        for (PrintWriter writer : allClientWriters) {
+            if (writer != excludeWriter) {
+                writer.println(message);
+            }
         }
     }
 }
