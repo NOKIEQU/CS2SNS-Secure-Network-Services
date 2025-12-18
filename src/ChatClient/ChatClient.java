@@ -1,6 +1,6 @@
 import javax.net.ssl.*;
 import java.io.*;
-import java.util.Scanner;
+import java.util.*;
 
 public class ChatClient {
     private String jwt;
@@ -27,9 +27,9 @@ public class ChatClient {
 
     private static SSLSocket establishServerConnection(){
 	String hostname = "localhost";
-        int port = 12345;
+        int port = Integer.parseInt(System.getenv().getOrDefault("PORT", "49152"));
 
-	//establish connection with server
+        //establish connection with server
         try {
 	    // SSL TrustStore
 	    System.setProperty("javax.net.ssl.trustStore", "keystore.jks");
@@ -39,7 +39,7 @@ public class ChatClient {
 	    SSLSocket socket = (SSLSocket) sslFactory.createSocket(hostname, port);
 	    return socket;
         } catch (IOException e) {
-            e.printStackTrace();
+        System.out.println(e.getMessage());
 	    System.exit(1);
         }
 	return null;
@@ -59,7 +59,6 @@ public class ChatClient {
 	    out.println(scanner.nextLine());
 	}
 	} catch (IOException e) {
-	    System.out.println("kurwa");
 	    System.exit(0);
 	}
 
@@ -90,7 +89,7 @@ public class ChatClient {
 	    while (scanner.hasNextLine()) {
 		String input = scanner.nextLine();
 		out.println(input);
-		if ("Logout".equals(input)) {
+		if ("/Logout".equals(input)) {
 		    System.exit(0);
 		};
 

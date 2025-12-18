@@ -1,37 +1,42 @@
 //This class holds information about all users and loggedIn users(session)
-//loggedIn Users have their output stram 
-
-interface LoggedInUser {
-    name: String;
-    output: PrintWriter;
-}
+//loggedIn Users have their output stram
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ServerDb {
     // Track all registered users
-    private Map<String, String> userDatabase = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, User> users;
     
     // Track connected users so nobody can log in twice at the same time
-    public Map<String,LoggedInUser> connectedUsers = ConcurrentHashMap.newKeySet();
-    
+    public ConcurrentHashMap<String,LoggedinUser> connectedUsers;
 
-    public void addClient(PrintWriter writer) {
-        allClientWriters.add(writer);
+    public ServerDb() {
+	    this.users= new ConcurrentHashMap<>();
+	    this.connectedUsers = new ConcurrentHashMap<>();
+    }
+    public ConcurrentHashMap<String,LoggedinUser> getLoggedinUsers(){
+        return this.connectedUsers;
+    }
+
+    public LoggedinUser addClient(String username, PrintWriter writer) {
+        LoggedinUser user = new LoggedinUser(username,writer);
+        connectedUsers.put(username,user);
+        return user;
     }
     
-    public void removeClient(PrintWriter writer, String username) {
-        allClientWriters.remove(writer);
-        if (username != null) {
-            connectedUsers.remove(username);
-            System.out.println(username + " has left.");
-            broadcast("SERVER: " + username + " has left the chat.", null);
-        }
+    public void removeClient(String username) {
+	    connectedUsers.remove(username);
     }
-    
-    public void broadcast(String message, PrintWriter excludeWriter) {
-        for (PrintWriter writer : allClientWriters) {
-            if (writer != excludeWriter) {
-                writer.println(message);
-            }
-        }
+    public ConcurrentHashMap<String,User> getUsers(){
+        return users;
+    }
+    public User addUser(String username, String password){
+        User user = new User(username,password);
+        users.put(username,user);
+        return user;
+    }
+    public void removeUser(String username){
+        users.remove(username);
     }
 }
