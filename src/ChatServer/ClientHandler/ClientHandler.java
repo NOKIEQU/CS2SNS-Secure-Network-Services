@@ -21,19 +21,25 @@ public class ClientHandler implements Runnable {
     @Override
     public void run() {
         try {
+	    //reading usre input
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+	    //send him message
             out = new PrintWriter(socket.getOutputStream(), true);
         
             // Call handle login until user successfully logs in
             while ((this.user = this.handleUserLogin(out, this.authHandler)) == null) {};
 
+	    //outputing to 
             System.out.println(user.getName() + " logged in successfully.");
-            Server.broadcast("SERVER: " + user.getName() + " has joined!", out);
+            Server.broadcast("SERVER: " + user.getName() + " has joined!");
         
             // CHAT LOOP
             String message;
+	    //print while we have connection with user
             while ((message = in.readLine()) != null) {
+		//do not broadcast message if its empty
 		if (message.isEmpty()) continue;
+		//special commands
                 if ("/logout".equals(message)) {
                     try {socket.close();} catch (IOException e) {}
                     continue;
@@ -52,12 +58,13 @@ public class ClientHandler implements Runnable {
 		if (!message.isEmpty() && message.charAt(0) == '/') {
 		    out.println("Could not find the command");
 		}
-
+		//broadcast message to the whole groupchat
                 this.broadcastMessage(user.getName(), message);
             }
         } catch (IOException e) {
             System.out.println("Server Connection Error");
         } finally {
+	    //close socket, remove uesr broadcast this to chatafter he logout 
             if(this.user != null) {
                 this.authHandler.logoutUser(this.user.getName());
                 Server.broadcast("SERVER: " + this.user.getName() + " has left the chat.", out);
