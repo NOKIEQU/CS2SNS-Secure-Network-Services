@@ -33,6 +33,7 @@ public class ClientHandler implements Runnable {
             // CHAT LOOP
             String message;
             while ((message = in.readLine()) != null) {
+		if (message.isEmpty()) continue;
                 if ("/logout".equals(message)) {
                     try {socket.close();} catch (IOException e) {}
                     continue;
@@ -76,6 +77,7 @@ public class ClientHandler implements Runnable {
             try {
                 LoggedinUser user = auth.loginUser(username, password, out);
 		out.println("ju sukcesfuli ar logd in as " + user.getName());
+		this.clearScreen(out);
 		this.printHelpMessage(out);
                 return user;
             } catch (IllegalArgumentException e){
@@ -96,7 +98,6 @@ public class ClientHandler implements Runnable {
     }
 
     private void printHelpMessage(PrintWriter out){
-	this.clearScreen(out);
 	out.println("------------------------------");
 	out.println("=== Welcome To Secure Chat ===");
 	out.println("------------------------------");
