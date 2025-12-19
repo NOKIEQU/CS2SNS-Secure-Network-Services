@@ -15,7 +15,7 @@ public class ChatClient {
 
 	// --- LISTENER THREAD ---
 	// Handles incoming messages and server commands
-	new Thread(() -> this.printServerMessage(socket)).start();
+	new Thread(() -> ChatClient.printServerMessage(socket)).start();
 	
 	//Send Auth Info To server
 	//	this.handleAuth(socket); //this will block the thread
@@ -47,16 +47,16 @@ public class ChatClient {
 
     private static void handleAuth(SSLSocket socket){
 	try{
-	Scanner scanner = new Scanner(System.in);
+	try (Scanner scanner = new Scanner(System.in)) {
+		// Output to Server
+		PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+		//server response
+		BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-	// Output to Server
-	PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-	//server response
-	BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-	String line;
-	while ((line = in.readLine()) != null && !line.startsWith("LOGIN_SUCCESS")) {
-	    out.println(scanner.nextLine());
+		String line;
+		while ((line = in.readLine()) != null && !line.startsWith("LOGIN_SUCCESS")) {
+		    out.println(scanner.nextLine());
+		}
 	}
 	} catch (IOException e) {
 	    System.exit(0);
