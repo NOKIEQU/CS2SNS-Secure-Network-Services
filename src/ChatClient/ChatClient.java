@@ -61,7 +61,6 @@ public class ChatClient {
 	} catch (IOException e) {
 	    System.exit(0);
 	}
-
     }
     
     private static void printServerMessage(SSLSocket socket){
@@ -89,10 +88,8 @@ public class ChatClient {
 	    while (scanner.hasNextLine()) {
 		String input = scanner.nextLine();
 		out.println(input);
-		if ("/Logout".equals(input)) {
+		if ("/Logout".equals(input))
 		    System.exit(0);
-		};
-
 	    }
 	} catch (IOException e) {
 	    System.out.println("Disconnected from server.");

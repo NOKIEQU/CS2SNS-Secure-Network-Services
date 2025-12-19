@@ -1,8 +1,9 @@
+package Server;
 import java.io.*;
 
 class LoggedinUser {
-    public String name;
-    public PrintWriter output;
+    private String name;
+    private PrintWriter output;
 
     public LoggedinUser(String name, PrintWriter output){
 	this.name = name;

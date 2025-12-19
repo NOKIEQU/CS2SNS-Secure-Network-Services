@@ -1,5 +1,9 @@
+package Server;
 import java.io.*;
 import java.net.Socket;
+import Server.ServerAuth;
+import Server.LoggedinUser;
+import Server.ChatServer;
 
 public class ClientHandler implements Runnable {
     private Socket socket;
