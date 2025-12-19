@@ -13,32 +13,24 @@ public class ChatClient {
     public void start(){
 	SSLSocket socket = establishServerConnection();
 
-	// Output to Server
-	PrintWriter out = null;
+	// Output to Server and Input from Server
 	try {
-		out = new PrintWriter(socket.getOutputStream(), true);
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-	//server response
-	BufferedReader in = null;
-	try {
-		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
+	    final PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+	    final BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-	// --- LISTENER THREAD ---
-	// Handles incoming messages and server commands
-	new Thread(() -> ChatClient.printServerMessage(socket, in)).start();
-	
-	//Send Auth Info To server
-	//	this.handleAuth(socket); //this will block the thread
+	    // --- LISTENER THREAD ---
+	    // Handles incoming messages and server commands
+	    new Thread(() -> ChatClient.printServerMessage(socket, in)).start();
+	    
+	    //Send Auth Info To server
+	    //	this.handleAuth(socket); //this will block the thread
 
-	// --- SENDER ---
-	this.typeMessage(socket,out);
+	    // --- SENDER ---
+	    this.typeMessage(socket,out);
+	} catch (IOException e) {
+	    e.printStackTrace();
+	    System.exit(1);
+	}
 	
     }
 
@@ -95,19 +87,14 @@ public class ChatClient {
 	
     };
     private void typeMessage(SSLSocket socket,PrintWriter out){
-	try{
-	    // Input from User Keyboard
-	    Scanner scanner = new Scanner(System.in);
-	    
+	// Input from User Keyboard
+	try (Scanner scanner = new Scanner(System.in)) {
 	    while (scanner.hasNextLine()) {
 		String input = scanner.nextLine();
 		out.println(input);
 		if ("/logout".equals(input))
 		    System.exit(0);
 	    }
-	} catch (IOException e) {
-	    System.out.println("Disconnected from server.");
-	    System.exit(0);
 	}
 	
     };
