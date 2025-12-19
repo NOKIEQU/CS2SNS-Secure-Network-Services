@@ -1,15 +1,17 @@
 package ChatServer;
+
 import javax.net.ssl.*;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+// The imports now work because "Server" (class) != "ChatServer" (package)
 import ChatServer.ServerDb.ServerDb;
 import ChatServer.ServerAuth.ServerAuth;
 import ChatServer.ClientHandler.ClientHandler;
 import ChatServer.LoggedinUser.LoggedinUser;
 
-public class ChatServer {
+public class Server {
     private static ServerDb db = new ServerDb();
     private static ServerAuth auth = new ServerAuth(db);
 
@@ -28,7 +30,8 @@ public class ChatServer {
 
             while (true) {
                 SSLSocket clientSocket = (SSLSocket) serverSocket.accept();
-                new Thread(new ClientHandler(clientSocket,auth)).start();
+                // We pass the new class name if needed, but here we just start the thread
+                new Thread(new ClientHandler(clientSocket, auth)).start();
             }
         } catch (IOException e) {
             e.printStackTrace();
