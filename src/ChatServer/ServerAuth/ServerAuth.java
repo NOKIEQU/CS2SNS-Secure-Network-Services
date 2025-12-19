@@ -1,13 +1,16 @@
-package Server;
+package ChatServer.ServerAuth;
 import java.util.concurrent.ConcurrentHashMap;
 import java.io.*;
+
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import java.security.SecureRandom;
 import java.util.Base64;
-import Server.ServerDb;
-import Server.LoggedinUser;
-import Server.User;
+
+import ChatServer.ServerDb.ServerDb;
+import ChatServer.User.User;
+import ChatServer.LoggedinUser.LoggedinUser;
+
 
 public class ServerAuth {
     ServerDb db;
@@ -42,9 +45,9 @@ public class ServerAuth {
 
             byte[] testHash = skf.generateSecret(spec).getEncoded();
 
-	    int diff = hash.length ^ password.length;
-	    for (int i = 0; i < hash.length && i < password.length; i++) {
-		diff |= hash[i] ^ password[i];
+	    int diff = hash.length ^ testHash.length;
+	    for (int i = 0; i < hash.length && i < testHash.length; i++) {
+		diff |= hash[i] ^ testHash[i];
 	    }
 	    return diff == 0;
         } catch (Exception e) {

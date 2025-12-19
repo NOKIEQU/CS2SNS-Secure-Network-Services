@@ -1,7 +1,7 @@
-package Server;
+package ChatServer.LoggedinUser;
 import java.io.*;
 
-class LoggedinUser {
+public class LoggedinUser {
     private String name;
     private PrintWriter output;
 

@@ -1,11 +1,12 @@
 //This class holds information about all users and loggedIn users(session)
 //loggedIn Users have their output stram
-package Server;
+package ChatServer.ServerDb;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import Server.User;
-import Server.LoggedinUser;
+
+import ChatServer.User.User;
+import ChatServer.LoggedinUser.LoggedinUser;
 
 public class ServerDb {
     // Track all registered users

@@ -1,9 +1,9 @@
-package Server;
+package ChatServer.ClientHandler;
 import java.io.*;
 import java.net.Socket;
-import Server.ServerAuth;
-import Server.LoggedinUser;
-import Server.ChatServer;
+import ChatServer.ServerAuth.ServerAuth;
+import ChatServer.LoggedinUser.LoggedinUser;
+import ChatServer.ChatServer;
 
 public class ClientHandler implements Runnable {
     private Socket socket;
@@ -13,7 +13,6 @@ public class ClientHandler implements Runnable {
     private ServerAuth authHandler;
 
     public ClientHandler(Socket socket,ServerAuth auth) {
-
         this.socket = socket;
         this.authHandler = auth;
 
