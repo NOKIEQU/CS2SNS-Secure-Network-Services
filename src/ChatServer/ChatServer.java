@@ -3,6 +3,8 @@ import javax.net.ssl.*;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import Server.ServerDb;
+import Server.ServerAuth;
 
 public class ChatServer {
     private static ServerDb db = new ServerDb();
