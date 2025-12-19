@@ -1,5 +1,6 @@
 import javax.net.ssl.*;
 import java.io.*;
+import java.net.*;
 import java.util.*;
 
 public class ChatClient {
@@ -11,7 +12,7 @@ public class ChatClient {
     
     public void start() {
 	//connecting to server
-	SSLSocket socket = establishServerConnection();
+	Socket socket = establishServerConnection();
 
 	// LISTENER THREAD
 	// Handles incoming messages and server commands
@@ -21,20 +22,29 @@ public class ChatClient {
 	this.typeMessage(socket);
     }
     
-    private static SSLSocket establishServerConnection() {
-	//taking hostname & port from env if not present default to localst:49152
+    private static Socket establishServerConnection() {
+	//taking hostname & port from env if not present default to localhost:49152
 	String hostname = System.getenv().getOrDefault("HOST", "localhost");
 	int port = Integer.parseInt(System.getenv().getOrDefault("PORT", "49152"));
+	boolean useSSL = Boolean.parseBoolean(System.getenv().getOrDefault("USE_SSL", "true"));
 	
 	try {
-	    //SSL TrustStore
-	    System.setProperty("javax.net.ssl.trustStore", "keystore.jks");
-	    System.setProperty("javax.net.ssl.trustStorePassword", "verystrongpassword123");
-	    
-	    //create ssl socket and try to establish connection with server
-	    SSLSocketFactory sslFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-	    SSLSocket socket = (SSLSocket) sslFactory.createSocket(hostname, port);
-	    return socket;
+	    if (useSSL) {
+		//SSL TrustStore
+		System.setProperty("javax.net.ssl.trustStore", "keystore.jks");
+		System.setProperty("javax.net.ssl.trustStorePassword", "verystrongpassword123");
+		
+		//create ssl socket and try to establish connection with server
+		SSLSocketFactory sslFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+		SSLSocket socket = (SSLSocket) sslFactory.createSocket(hostname, port);
+		System.out.println("Connected to server with SSL on " + hostname +":" + port);
+		return socket;
+	    } else {
+		//create regular socket without SSL
+		Socket socket = new Socket(hostname, port);
+		System.out.println("Connected to server without SSL on " + hostname +":" + port);
+		return socket;
+	    }
 	} catch (IOException e) {
 	    System.out.println(e);
 	    System.exit(1);
@@ -42,7 +52,7 @@ public class ChatClient {
 	return null;
     }
     
-    private static void printServerMessage(SSLSocket socket) {
+    private static void printServerMessage(Socket socket) {
 	// Input from Server
 	try {
 	    //in is the messages server sends
@@ -59,7 +69,7 @@ public class ChatClient {
 	
     };
     
-    private void typeMessage(SSLSocket socket) {
+    private void typeMessage(Socket socket) {
 	// Input from User Keyboard
 	try {
 	    //take user input
