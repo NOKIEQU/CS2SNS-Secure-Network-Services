@@ -13,20 +13,37 @@ public class ChatClient {
     public void start(){
 	SSLSocket socket = establishServerConnection();
 
+	// Output to Server
+	PrintWriter out = null;
+	try {
+		out = new PrintWriter(socket.getOutputStream(), true);
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	//server response
+	BufferedReader in = null;
+	try {
+		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+
 	// --- LISTENER THREAD ---
 	// Handles incoming messages and server commands
-	new Thread(() -> ChatClient.printServerMessage(socket)).start();
+	new Thread(() -> ChatClient.printServerMessage(socket, in)).start();
 	
 	//Send Auth Info To server
 	//	this.handleAuth(socket); //this will block the thread
 
 	// --- SENDER ---
-	this.typeMessage(socket);
+	this.typeMessage(socket,out);
 	
     }
 
     private static SSLSocket establishServerConnection(){
-	String hostname = "localhost";
+	String hostname = "192.168.1.224";
         int port = Integer.parseInt(System.getenv().getOrDefault("PORT", "49152"));
 
         //establish connection with server
@@ -39,7 +56,7 @@ public class ChatClient {
 	    SSLSocket socket = (SSLSocket) sslFactory.createSocket(hostname, port);
 	    return socket;
         } catch (IOException e) {
-        System.out.println(e.getMessage());
+	    System.out.println(e);
 	    System.exit(1);
         }
 	return null;
@@ -63,11 +80,10 @@ public class ChatClient {
 	}
     }
     
-    private static void printServerMessage(SSLSocket socket){
+    private static void printServerMessage(SSLSocket socket,BufferedReader in){
 	// Input from Server
 
 	try {
-	    BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 	    String serverMsg;
 	    while ((serverMsg = in.readLine()) != null) {
 		System.out.println(serverMsg);
@@ -78,12 +94,10 @@ public class ChatClient {
 	}
 	
     };
-    private void typeMessage(SSLSocket socket){
+    private void typeMessage(SSLSocket socket,PrintWriter out){
 	try{
 	    // Input from User Keyboard
 	    Scanner scanner = new Scanner(System.in);
-	    // Output to Server
-	    PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 	    
 	    while (scanner.hasNextLine()) {
 		String input = scanner.nextLine();
