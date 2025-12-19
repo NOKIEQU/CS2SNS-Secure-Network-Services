@@ -28,24 +28,37 @@ public class ClientHandler implements Runnable {
             while ((this.user = this.handleUserLogin(out, this.authHandler)) == null) {};
 
             System.out.println(user.getName() + " logged in successfully.");
-            // UPDATED: Call Server.broadcast instead of ChatServer.broadcast
             Server.broadcast("SERVER: " + user.getName() + " has joined!", out);
         
             // CHAT LOOP
             String message;
             while ((message = in.readLine()) != null) {
-                if ("/Logout".equals(message)) {
+                if ("/logout".equals(message)) {
                     try {socket.close();} catch (IOException e) {}
                     continue;
                 }
+                if ("/help".equals(message)) {
+		    this.printHelpMessage(out);
+		    continue;
+		}
+		if ("/clear".equals(message)) {
+		    out.print("");
+		    out.print("\033[2J\033[H");
+		    out.flush();
+		    out.println("! Chat Cleared");
+		    continue;
+		}
+		if (!message.isEmpty() && message.charAt(0) == '/') {
+		    out.println("Could not find the command");
+		}
+
                 this.broadcastMessage(user.getName(), message);
             }
         } catch (IOException e) {
-            System.out.println("Connection Error: " + e.getMessage());
+            System.out.println("Server Connection Error");
         } finally {
             if(this.user != null) {
                 this.authHandler.logoutUser(this.user.getName());
-                // UPDATED: Call Server.broadcast
                 Server.broadcast("SERVER: " + this.user.getName() + " has left the chat.", out);
             }
             try {socket.close();} catch (IOException e) {}
@@ -62,6 +75,8 @@ public class ClientHandler implements Runnable {
             if (username == null || password == null) return null; 
             try {
                 LoggedinUser user = auth.loginUser(username, password, out);
+		out.println("ju sukcesfuli ar logd in as " + user.getName());
+		this.printHelpMessage(out);
                 return user;
             } catch (IllegalArgumentException e){
                 out.println(e.getMessage());
@@ -78,5 +93,23 @@ public class ClientHandler implements Runnable {
         System.out.println(formattedMessage);
         // UPDATED: Call Server.broadcast
         Server.broadcast(formattedMessage, out);
+    }
+
+    private void printHelpMessage(PrintWriter out){
+	this.clearScreen(out);
+	out.println("------------------------------");
+	out.println("=== Welcome To Secure Chat ===");
+	out.println("------------------------------");
+	out.println("");
+	out.println("To send message type your message in the chat");
+	out.println("All the messages that start with '/' are considered system commands");
+	out.println("To Logout type /logout in the chat");
+	out.println("To clear the screen type /clear in the chat");
+	out.println("To see this message again type /help");
+    }
+
+    private void clearScreen(PrintWriter out){
+	out.print("\033[2J\033[H");
+	out.flush();
     }
 }

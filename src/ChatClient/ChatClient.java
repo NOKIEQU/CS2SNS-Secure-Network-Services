@@ -88,7 +88,7 @@ public class ChatClient {
 	    while (scanner.hasNextLine()) {
 		String input = scanner.nextLine();
 		out.println(input);
-		if ("/Logout".equals(input))
+		if ("/logout".equals(input))
 		    System.exit(0);
 	    }
 	} catch (IOException e) {
