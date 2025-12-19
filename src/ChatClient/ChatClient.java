@@ -18,10 +18,6 @@ public class ChatClient {
 	    out = new PrintWriter(socket.getOutputStream(), true);
 	    //server response
 	    in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        } catch (IOException e) {
-	    System.out.println(e);
-	    System.exit(1);
-        }
 
 	    // --- LISTENER THREAD ---
 	    // Handles incoming messages and server commands
