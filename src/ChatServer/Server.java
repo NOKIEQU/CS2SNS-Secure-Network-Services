@@ -17,6 +17,7 @@ public class Server {
     private static ServerAuth auth = new ServerAuth(db);
 
     public static void main(String[] args) {
+	//taking port from env of deafult to 49152
         int port = Integer.parseInt(System.getenv().getOrDefault("PORT", "49152"));
         boolean useSSL = Boolean.parseBoolean(System.getenv().getOrDefault("USE_SSL", "true"));
 
@@ -41,19 +42,21 @@ public class Server {
 
                 System.out.println("Chat Server started on port " + port + " (SSL disabled)");
 
+		//all the server does is accept new connection and create new thread for new users
                 while (true) {
                     Socket clientSocket = serverSocket.accept();
                     new Thread(new ClientHandler(clientSocket, auth)).start();
                 }
-            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    //broadcast message to everyone who the server currently has established connection with
     public static void broadcast(String message, PrintWriter excludeWriter) {
         ConcurrentHashMap<String,LoggedinUser> users = db.getLoggedinUsers();
         Collection<LoggedinUser> usersCollection = users.values();
+	//do not send message to excludewriter (usually the person who established connection)
         for (LoggedinUser user : usersCollection) {
             if(user.getOutput() != excludeWriter)
                 user.getOutput().println(message);
