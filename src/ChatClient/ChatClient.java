@@ -3,35 +3,27 @@ import java.io.*;
 import java.util.*;
 
 public class ChatClient {
-
-
     
     public static void main(String[] args) {
-    ChatClient client = new ChatClient();
-    client.start();
-}
+	ChatClient client = new ChatClient();
+	client.start();
+    }
     
     public void start() {
 	SSLSocket socket = establishServerConnection();
-	try {
-	    // Output to Server
-	    
-	    // server response
-	    
-	    // --- LISTENER THREAD ---
-	    // Handles incoming messages and server commands
-	    new Thread(() -> ChatClient.printServerMessage(socket)).start();
-	    
-	    // Send Auth Info To server
-	    // this.handleAuth(socket); //this will block the thread
-	    
-	    // --- SENDER ---
-	    this.typeMessage(socket);
-	} catch (IOException e) {
-	    e.printStackTrace();
-	    System.exit(1);
-	}
+	// Output to Server
 	
+	// server response
+	
+	// --- LISTENER THREAD ---
+	// Handles incoming messages and server commands
+	new Thread(() -> ChatClient.printServerMessage(socket)).start();
+	
+	// Send Auth Info To server
+	// this.handleAuth(socket); //this will block the thread
+	
+	// --- SENDER ---
+	this.typeMessage(socket);
     }
     
     private static SSLSocket establishServerConnection() {
@@ -87,10 +79,10 @@ public class ChatClient {
 	
     };
     
-    private void typeMessage(SSLSocket socket, PrintWriter out) {
+    private void typeMessage(SSLSocket socket) {
 	// Input from User Keyboard
 	try {
-	    Scanner scanner = new Scanner(System.in)
+	    Scanner scanner = new Scanner(System.in);
 		PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 	    while (scanner.hasNextLine()) {
 		String input = scanner.nextLine();
