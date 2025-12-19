@@ -3,7 +3,8 @@ import java.io.*;
 import java.util.*;
 
 public class ChatClient {
-    private String jwt;
+    private static PrintWriter out;
+    private static BufferedReader in;
 
     public static void main(String[] args) {
 	ChatClient client = new ChatClient();
@@ -12,11 +13,15 @@ public class ChatClient {
     
     public void start(){
 	SSLSocket socket = establishServerConnection();
-
-	// Output to Server and Input from Server
-	try {
-	    final PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-	    final BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+	try{
+	    // Output to Server
+	    out = new PrintWriter(socket.getOutputStream(), true);
+	    //server response
+	    in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        } catch (IOException e) {
+	    System.out.println(e);
+	    System.exit(1);
+        }
 
 	    // --- LISTENER THREAD ---
 	    // Handles incoming messages and server commands
@@ -96,6 +101,5 @@ public class ChatClient {
 		    System.exit(0);
 	    }
 	}
-	
     };
 }
