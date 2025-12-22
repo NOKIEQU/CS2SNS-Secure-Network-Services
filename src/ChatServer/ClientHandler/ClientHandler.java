@@ -31,7 +31,7 @@ public class ClientHandler implements Runnable {
 
 	    //outputing to 
             System.out.println(user.getName() + " logged in successfully.");
-            Server.broadcast("SERVER: " + user.getName() + " has joined!");
+            Server.broadcast("SERVER: " + user.getName() + " has joined!",user.getOutput());
         
             // CHAT LOOP
             String message;
