@@ -47,6 +47,7 @@ public class Server {
                     Socket clientSocket = serverSocket.accept();
                     new Thread(new ClientHandler(clientSocket, auth)).start();
                 }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
