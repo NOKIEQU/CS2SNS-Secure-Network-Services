@@ -19,7 +19,7 @@ public class Server {
     public static void main(String[] args) {
 	//taking port from env of deafult to 49152
         int port = Integer.parseInt(System.getenv().getOrDefault("PORT", "49152"));
-        boolean useSSL = Boolean.parseBoolean(System.getenv().getOrDefault("USE_SSL", "true"));
+	boolean useSSL = Boolean.parseBoolean(System.getenv().getOrDefault("USE_SSL", "true"));
 
         try {
             if (useSSL) {
